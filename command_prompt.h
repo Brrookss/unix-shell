@@ -10,12 +10,14 @@ struct Command {
 };
 
 char *getInput(void);
-struct Command *parseInput(char *);
-struct Command *initializeCommandStruct(void);
+
 int isBackgroundProcess(char *);
 int isComment(char *);
 int isInputRedirect(char *);
 int isOutputRedirect(char *);
 int isPromptSymbol(char *);
+
+struct Command *initializeCommandStruct(void);
+struct Command *parseInput(char *);
 
 #endif

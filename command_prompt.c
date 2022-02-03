@@ -22,7 +22,7 @@ char *getInput(void) {
  * Interprets user input and stores data in a struct to be utilized
  */
 struct Command *parseInput(char *input) {
-    char *tok, *next_tok, *delims = " \n\t";
+    char *tok, *next_tok, *substr, *delims = " \n\t";
     struct Command *c;
 
     c = initializeCommandStruct();
@@ -60,6 +60,9 @@ struct Command *parseInput(char *input) {
         }
 
         else {
+            while ((substr = hasVarExpansion(tok)) != NULL) {
+                tok = expandVar(tok, substr);
+            }
             argumentHandler(tok, c);
         }
         tok = strtok(NULL, delims);
