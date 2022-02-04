@@ -5,11 +5,11 @@
 #include "command_prompt.h"
 #include "command_handlers.h"
 
-#define PID_BUFFER_SIZE 8
+#define MAX_PID_DIGITS 8
 #define VARIABLE_EXPANSION "$$"
 
 /*
- * Adds to the Command struct's argument character pointer array
+ * Adds to the Command structure's argument character pointer array
  * with the index being the first NULL element.
  */
 void argumentHandler(char *input, struct Command *c) {
@@ -20,21 +20,21 @@ void argumentHandler(char *input, struct Command *c) {
     strcpy(s, input);
 
     i = 0;
-    while (c->args[i]) {
-        i += sizeof(char *);
-    }
+    while (c->args[i])
+        i++;
+    
     c->args[i] = s;
 }
 
 /*
- * Sets the Command struct's name character pointer.
+ * Sets the Command structure's name character pointer.
  * Only the first instantiation is used.
  */
 void commandHandler(char *input, struct Command *c) {
     if (c->name == NULL) {
         char *s;
 
-        s = (char *)calloc(sizeof(input + 1), sizeof(char));
+        s = (char *)calloc(sizeof(input) + 1, sizeof(char));
         strcpy(s, input);
 
         c->name = s;
@@ -49,7 +49,7 @@ void commandHandler(char *input, struct Command *c) {
  */
 char *expandVar(char *input, char *substring) {
     int pid_i, i, j, k;
-    char *output, pid_s[PID_BUFFER_SIZE] = {'\0'};
+    char *output, pid_s[MAX_PID_DIGITS] = {'\0'};
 
     pid_i = getpid();
     sprintf(pid_s, "%d", pid_i);
@@ -86,7 +86,7 @@ char *hasVarExpansion(char *input) {
 }
 
 /*
- * Sets the Command struct's input redirection character pointer.
+ * Sets the Command structure's input redirection character pointer.
  * Only the first instantiation is used.
  */
 void inputRedirectHandler(char *input, struct Command *c) {
@@ -101,7 +101,14 @@ void inputRedirectHandler(char *input, struct Command *c) {
 }
 
 /*
- * Sets the Command struct's output redirection character pointer.
+ * Checks if there is a command name stored in the Command structure
+ */
+int isCommand(struct Command *c) {
+    return c->name != NULL;
+}
+
+/*
+ * Sets the Command structure's output redirection character pointer.
  * Only the first instantiation is used.
  */
 void outputRedirectHandler(char *input, struct Command *c) {
@@ -116,9 +123,9 @@ void outputRedirectHandler(char *input, struct Command *c) {
 }
 
 /*
- * Sets the Command struct's background process integer to
- * 0 or 1 which represents false and true, respectively.
+ * Sets the Command structure's foreground process integer to
+ * 0 or 1 which represents true and false, respectively.
  */
 void setBackgroundProcess(int bool, struct Command *c) {
-    c->bg = bool;
+    c->fg = bool;
 }

@@ -4,25 +4,23 @@
 #include "command_prompt.h"
 #include "command_handlers.h"
 
-#define CL_BUFFER_SIZE 2048
-#define ARGS_BUFFER_SIZE 512
-
 /*
  * Gets user input to be parsed
  */
 char *getInput(void) {
     char *buffer;
+    size_t len = MAX_CL_CHARS + 1;
 
-    buffer = (char *)calloc(CL_BUFFER_SIZE + 1, sizeof(char));
-    fgets(buffer, CL_BUFFER_SIZE + 1, stdin);
+    buffer = (char *)calloc(MAX_CL_CHARS + 1, sizeof(char));
+    getline(&buffer, &len, stdin);
     return buffer;
 }
 
 /*
- * Interprets user input and stores data in a struct to be utilized
+ * Interprets user input and stores data in a Command structure to be utilized
  */
 struct Command *parseInput(char *input) {
-    char *tok, *next_tok, *substr, *delims = " \n\t";
+    char *tok, *next_tok, *substr, *delims = " \n";
     struct Command *c;
 
     c = initializeCommandStruct();
@@ -38,6 +36,7 @@ struct Command *parseInput(char *input) {
     // Interprets non-comment token as a command
     if (tok && !isComment(tok)) {
         commandHandler(tok, c);
+        argumentHandler(tok, c);  // Includes command as first argument
         tok = strtok(NULL, delims);
     } else {
         tok = NULL;  // Ensures comment lines won't be parsed further
@@ -67,11 +66,6 @@ struct Command *parseInput(char *input) {
         }
         tok = strtok(NULL, delims);
     }
-
-    // Deallocates input array
-    free(input);
-    input = NULL;
-
     return c;
 }
 
@@ -114,14 +108,16 @@ int isBackgroundProcess(char *s) {
  * Creates an empty Command structure
  */
 struct Command *initializeCommandStruct(void) {
+    // int i;
     struct Command *c;
 
     c = (struct Command *)malloc(sizeof(struct Command));
+
+    c->args = calloc(MAX_ARGS + 1, sizeof(char *));
     c->name = NULL;
-    memset(c->args, '\0', ARGS_BUFFER_SIZE * sizeof(char *));
     c->iredir = NULL;
     c->oredir = NULL;
-    c->bg = 0;
+    c->fg = 0;
 
     return c;
 }
