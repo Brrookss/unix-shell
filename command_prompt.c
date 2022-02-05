@@ -108,7 +108,6 @@ int isBackgroundProcess(char *s) {
  * Creates an empty Command structure
  */
 struct Command *initializeCommandStruct(void) {
-    // int i;
     struct Command *c;
 
     c = (struct Command *)malloc(sizeof(struct Command));
@@ -117,7 +116,7 @@ struct Command *initializeCommandStruct(void) {
     c->name = NULL;
     c->iredir = NULL;
     c->oredir = NULL;
-    c->fg = 0;
+    c->foreground = 0;
 
     return c;
 }

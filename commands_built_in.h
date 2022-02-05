@@ -6,7 +6,9 @@ int iscd(char *);
 int isexit(char *);
 int isstatus(char *);
 
-void cd(struct Command *);
-void executeBuiltInCommand(struct Command *);
+void cd_(struct Command *);
+void executeBuiltInCommand(struct Command *, struct ShellProcess *);
+void exit_(struct ShellProcess *);
+void status(struct ShellProcess *);
 
 #endif

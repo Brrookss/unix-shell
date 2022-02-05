@@ -10,7 +10,7 @@
 
 /*
  * Adds to the Command structure's argument character pointer array
- * with the index being the first NULL element.
+ * with the index being the first NULL element
  */
 void argumentHandler(char *input, struct Command *c) {
     char *s;
@@ -124,8 +124,8 @@ void outputRedirectHandler(char *input, struct Command *c) {
 
 /*
  * Sets the Command structure's foreground process integer to
- * 0 or 1 which represents true and false, respectively.
+ * 0 or 1 which represents true and false, respectively
  */
 void setBackgroundProcess(int bool, struct Command *c) {
-    c->fg = bool;
+    c->foreground = bool;
 }

@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
-#include "command_prompt.h"
+#include <signal.h>
+#include "memory.h"
 
 /*
  * Deallocates user input character array
@@ -10,7 +12,7 @@ void deallocateInput(char *s) {
 }
 
 /*
- * Deallocates Command structure
+ * Deallocates Command structure including all dynamically created arguments
  */
 void deallocateCommandStruct(struct Command *c) {
     int i;
@@ -34,7 +36,25 @@ void deallocateCommandStruct(struct Command *c) {
         free(c->oredir);
         c->oredir = NULL;
     }
-
     free(c);
     c = NULL;
+}
+
+/*
+ * Deallocates ShellProcess structure and terminates all
+ * currently running background processes
+ */
+void deallocateShellProcessStruct(struct ShellProcess *sh) {
+    struct BackgroundProcess *cur, *next;
+
+    cur = sh->head;
+
+    while (cur) {
+        next = cur->next;
+        kill(cur->pid, SIGTERM);
+        free(cur);
+        cur = next;
+    }
+    free(sh);
+    sh = NULL;
 }

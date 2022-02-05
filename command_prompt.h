@@ -9,7 +9,7 @@ struct Command {
     char **args;
     char *iredir;
     char *oredir;
-    int fg;
+    int foreground;
 };
 
 char *getInput(void);
