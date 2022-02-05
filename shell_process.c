@@ -1,18 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include "shell_process.h"
+
+#define STATUS_MESSAGE_CHARS 100
 
 /*
  * Initializes a ShellProcess structure
  */
-struct ShellProcess *initializeShellProcessStruct(void) {
+struct ShellProcess *initializeShellProcess(void) {
     struct ShellProcess *sh;
+    char *s;
 
     sh = (struct ShellProcess *)malloc(sizeof(struct ShellProcess));
 
+    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    strcpy(s, "Exit status 0");
+
     sh->head = NULL;
-    sh->prev_term_signal = 0;
+    sh->prev_status_message = s;
     sh->exiting = 1;
 
     return sh;
@@ -89,13 +96,27 @@ void deleteBackgroundProcess(int pid, struct ShellProcess *sh) {
 }
 
 /*
+ * Checks ShellProcess exit status
+ */
+int isRunning(struct ShellProcess *sh) {
+    return sh->exiting != 0;
+}
+
+/*
  * Sets the ShellProcess structure's most recent terminating signal value
  */
-void setPrevTermSignal(int child_status, struct ShellProcess *sh) {
+void setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
+    char *s;
+
+    if (sh->prev_status_message)
+        free(sh->prev_status_message);
+    
+    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    
     if (WIFEXITED(child_status)) {
-        sh->prev_term_signal = WEXITSTATUS(child_status);
+        sprintf(s, "Exit value %d", WEXITSTATUS(child_status));
     } else {
-        sh->prev_term_signal = WTERMSIG(child_status);
+        sprintf(s, "Terminated by signal %d", WTERMSIG(child_status));
     }
-    fflush(stdout);
+    sh->prev_status_message = s;
 }

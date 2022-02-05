@@ -13,9 +13,9 @@
 
 int main(void) {
     struct ShellProcess *sh;
-    sh = initializeShellProcessStruct();
+    sh = initializeShellProcess();
 
-    while (sh->exiting != 0) {
+    while (isRunning(sh)) {
         struct Command *c;
         char *input;
 
@@ -27,11 +27,11 @@ int main(void) {
         if (isCommand(c) && isBuiltInCommand(c)) {
             executeBuiltInCommand(c, sh);
         } else if (isCommand(c)) {
-            c->foreground == 0 ? executeExternalCommandForeground(c, sh) : executeExternalCommandBackground(c, sh);
+            runInForeground(c) ? executeExternalCommandForeground(c, sh) : executeExternalCommandBackground(c, sh);
         }
+        deallocateCommand(c);
         deallocateInput(input);
-        deallocateCommandStruct(c);
     }
-    deallocateShellProcessStruct(sh);
+    deallocateShellProcess(sh);
     return EXIT_SUCCESS;
 }

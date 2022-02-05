@@ -14,7 +14,7 @@ void deallocateInput(char *s) {
 /*
  * Deallocates Command structure including all dynamically created arguments
  */
-void deallocateCommandStruct(struct Command *c) {
+void deallocateCommand(struct Command *c) {
     int i;
 
     if (c->name) {
@@ -44,7 +44,7 @@ void deallocateCommandStruct(struct Command *c) {
  * Deallocates ShellProcess structure and terminates all
  * currently running background processes
  */
-void deallocateShellProcessStruct(struct ShellProcess *sh) {
+void deallocateShellProcess(struct ShellProcess *sh) {
     struct BackgroundProcess *cur, *next;
 
     cur = sh->head;
@@ -55,6 +55,10 @@ void deallocateShellProcessStruct(struct ShellProcess *sh) {
         free(cur);
         cur = next;
     }
+
+    free(sh->prev_status_message);
+    sh->prev_status_message = NULL;
+
     free(sh);
     sh = NULL;
 }

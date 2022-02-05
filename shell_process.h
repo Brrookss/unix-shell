@@ -8,14 +8,18 @@ struct BackgroundProcess {
 
 struct ShellProcess {
     struct BackgroundProcess *head;
-    int prev_term_signal;
+    char *prev_status_message;
     int exiting;
 };
 
-struct ShellProcess *initializeShellProcessStruct(void);
+
+int isRunning(struct ShellProcess *);
+
+struct ShellProcess *initializeShellProcess(void);
+
 void addBackgroundProcess(int, struct ShellProcess *);
 void checkBackgroundProcesses(struct ShellProcess *);
 void deleteBackgroundProcess(int, struct ShellProcess *);
-void setPrevTermSignal(int, struct ShellProcess *);
+void setPrevStatusMessage(int, struct ShellProcess *);
 
 #endif

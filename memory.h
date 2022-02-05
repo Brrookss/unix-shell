@@ -5,7 +5,7 @@
 #include "shell_process.h"
 
 void deallocateInput(char *);
-void deallocateCommandStruct(struct Command *);
-void deallocateShellProcessStruct(struct ShellProcess *);
+void deallocateCommand(struct Command *);
+void deallocateShellProcess(struct ShellProcess *);
 
 #endif

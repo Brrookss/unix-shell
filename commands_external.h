@@ -3,5 +3,6 @@
 
 int executeExternalCommandBackground(struct Command *, struct ShellProcess *);
 int executeExternalCommandForeground(struct Command *, struct ShellProcess *);
+int runInForeground(struct Command *);
 
 #endif

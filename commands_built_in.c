@@ -10,7 +10,10 @@
 #include "commands_built_in.h"
 
 /*
- * Changes current directory
+ * Changes current directory.
+ * Path is given as an argument and can be absolute or relative.
+ * If path isn't provided, the default is the path specified
+ * in the HOME environment variable.
  */
 void cd_(struct Command *c) {
     c->args[1] ? chdir(c->args[1]) : chdir(getenv("HOME"));
@@ -30,7 +33,7 @@ void executeBuiltInCommand(struct Command *c, struct ShellProcess *sh) {
 }
 
 /*
- * Initiates exiting from shell
+ * Initiates shell exit
  */
 void exit_(struct ShellProcess *sh) {
     sh->exiting = 0;
@@ -68,6 +71,6 @@ int isstatus(char *s) {
  * Displays the signal of the most recent foreground process
  */
 void status(struct ShellProcess *sh) {
-    printf("%d\n", sh->prev_term_signal);
+    printf("%s\n", sh->prev_status_message);
     fflush(stdout);
 }

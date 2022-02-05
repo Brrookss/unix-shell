@@ -12,17 +12,17 @@
 void backgroundRedirection(struct Command *c) {
     char *dest = "/dev/null";
 
-    if (!c->iredir) {
+    if (c->iredir == NULL) {
         inputRedirectHandler(dest, c);
     }
 
-    if (!c->oredir) {
+    if (c->oredir == NULL) {
         outputRedirectHandler(dest, c);
     }
 }
 
 /*
- * Execute external command as a background process
+ * Executes command as a background process
  */
 int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh) {
 	pid_t spawn_pid;
@@ -51,7 +51,7 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
 }
 
 /*
- * Execute external command as a foreground process
+ * Executes command as a foreground process
  */
 int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh) {
 	int child_status;
@@ -71,8 +71,15 @@ int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh)
             break;
         default:
             spawn_pid = waitpid(spawn_pid, &child_status, 0);
-            setPrevTermSignal(child_status, sh);
+            setPrevStatusMessage(child_status, sh);
             return EXIT_SUCCESS;
             break;
 	}
+}
+
+/*
+ * Checks if command is to be executed as a foreground process
+ */
+int runInForeground(struct Command *c) {
+    return c->foreground == 0;
 }
