@@ -18,7 +18,6 @@ int isBackgroundProcess(char *);
 int isComment(char *);
 int isInputRedirect(char *);
 int isOutputRedirect(char *);
-int isPrompt(char *);
 int redirectStdin(struct Command *);
 int redirectStdout(struct Command *);
 int stdinRedirectAttempt(struct Command *);

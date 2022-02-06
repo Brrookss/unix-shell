@@ -10,10 +10,14 @@
  * Gets user input to be parsed
  */
 char *getInput(void) {
-    char *buffer;
+    char *buffer, *prompt = ": ";
     size_t len = MAX_CL_CHARS + 1;
 
     buffer = (char *)calloc(MAX_CL_CHARS + 1, sizeof(char));
+
+    printf("%s", prompt);
+    fflush(stdout);
+
     getline(&buffer, &len, stdin);
     return buffer;
 }
@@ -57,13 +61,6 @@ int isOutputRedirect(char *s) {
 }
 
 /*
- * Checks if string matches the shell prompt symbol
- */
-int isPrompt(char *s) {
-    return strcmp(s, ":") == 0;
-}
-
-/*
  * Checks if string matches the background process invocation symbol
  */
 int isBackgroundProcess(char *s) {
@@ -74,18 +71,12 @@ int isBackgroundProcess(char *s) {
  * Interprets user input and stores data in a Command structure to be utilized
  */
 struct Command *parseInput(char *input) {
-    char *tok, *next_tok, *substr, *delims = " \n";
+    char *tok, *next_tok, *substr, *delims = " \n\t";
     struct Command *c;
 
     c = initializeCommand();
 
     tok = strtok(input, delims);
-
-    if (tok && isPrompt(tok)) {
-        tok = strtok(NULL, delims);
-    } else {
-        tok = NULL;  // Ensures lines without prompt symbol won't be parsed further
-    }
 
     // Interprets non-comment token as a command
     if (tok && !isComment(tok)) {
@@ -96,7 +87,7 @@ struct Command *parseInput(char *input) {
         tok = NULL;  // Ensures comment lines won't be parsed further
     }
 
-    // Inteprets arguments, input/output redirections, and background processing invocations
+    // Inteprets arguments, input/output redirections, and background processing attempts
     while (tok) {
         if (isInputRedirect(tok)) {
             next_tok = strtok(NULL, delims);  // Gets following related argument

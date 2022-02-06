@@ -7,6 +7,8 @@
 #include "command_handlers.h"
 #include "shell_process.h"
 
+#define TENTH_OF_A_SECOND 100000
+
 /*
  * Redirects uninitialized input and output to "/dev/null"
  */
@@ -35,6 +37,7 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
 	switch(spawn_pid) {
         case -1:
             perror("fork() failed!\n");
+            fflush(stdout);
             return EXIT_FAILURE;
             break;
         case 0:
@@ -44,10 +47,12 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
 
             // Only occurs during an unsuccessful exec()
             perror(c->name);
+            fflush(stdout);
             kill(getpid(), SIGKILL);
             return EXIT_FAILURE;
             break;
         default:
+            usleep(TENTH_OF_A_SECOND);  // Allow child process to execute exec() before parent returns
             addBackgroundProcess(spawn_pid, sh);
             return EXIT_SUCCESS;
             break;
@@ -66,6 +71,7 @@ int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh)
 	switch(spawn_pid) {
         case -1:
             perror("fork() failed!\n");
+            fflush(stdout);
             return EXIT_FAILURE;
             break;
         case 0:
@@ -73,6 +79,7 @@ int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh)
 
             // Only occurs during an unsuccessful exec()
             perror(c->name);
+            fflush(stdout);
             kill(getpid(), SIGKILL);
             return EXIT_FAILURE;
             break;
