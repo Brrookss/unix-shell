@@ -20,6 +20,7 @@ struct ShellProcess *initializeShellProcess(void);
 void addBackgroundProcess(int, struct ShellProcess *);
 void checkBackgroundProcesses(struct ShellProcess *);
 void deleteBackgroundProcess(int, struct ShellProcess *);
+void setExitFailureMessage(struct ShellProcess *);
 void setPrevStatusMessage(int, struct ShellProcess *);
 
 #endif

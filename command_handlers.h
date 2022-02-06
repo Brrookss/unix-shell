@@ -8,8 +8,8 @@ int isCommand(struct Command *);
 
 void argumentHandler(char *, struct Command *);
 void commandHandler(char *, struct Command *);
-void inputRedirectHandler(char *, struct Command *);
-void outputRedirectHandler(char *, struct Command *);
 void setBackgroundProcess(int, struct Command *);
+void stdinRedirectHandler(char *, struct Command *);
+void stdoutRedirectHandler(char *, struct Command *);
 
 #endif

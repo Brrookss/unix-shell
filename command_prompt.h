@@ -7,8 +7,8 @@
 struct Command {
     char *name;
     char **args;
-    char *iredir;
-    char *oredir;
+    char *input_redir;
+    char *output_redir;
     int foreground;
 };
 
@@ -18,11 +18,17 @@ int isBackgroundProcess(char *);
 int isComment(char *);
 int isInputRedirect(char *);
 int isOutputRedirect(char *);
-int isPromptSymbol(char *);
+int isPrompt(char *);
+int redirectStdin(struct Command *);
+int redirectStdout(struct Command *);
+int stdinRedirectAttempt(struct Command *);
+int stdoutRedirectAttempt(struct Command *);
+int successfulRedirects(int, int);
 
-struct Command *initializeCommandStruct(void);
+struct Command *initializeCommand(void);
 struct Command *parseInput(char *);
 
-void deallocateCommandStruct(struct Command *c);
+void resetStdin(int);
+void resetStdout(int);
 
 #endif

@@ -86,40 +86,10 @@ char *hasVarExpansion(char *input) {
 }
 
 /*
- * Sets the Command structure's input redirection character pointer.
- * Only the first instantiation is used.
- */
-void inputRedirectHandler(char *input, struct Command *c) {
-    if (c->iredir == NULL) {
-        char *s;
-
-        s = (char *)calloc(sizeof(input) + 1, sizeof(char));
-        strcpy(s, input);
-
-        c->iredir = s;
-    }
-}
-
-/*
  * Checks if there is a command name stored in the Command structure
  */
 int isCommand(struct Command *c) {
     return c->name != NULL;
-}
-
-/*
- * Sets the Command structure's output redirection character pointer.
- * Only the first instantiation is used.
- */
-void outputRedirectHandler(char *input, struct Command *c) {
-    if (c->oredir == NULL) {
-        char *s;
-
-        s = (char *)calloc(sizeof(input) + 1, sizeof(char));
-        strcpy(s, input);
-
-        c->oredir = s;
-    }
 }
 
 /*
@@ -128,4 +98,34 @@ void outputRedirectHandler(char *input, struct Command *c) {
  */
 void setBackgroundProcess(int bool, struct Command *c) {
     c->foreground = bool;
+}
+
+/*
+ * Sets the Command structure's standard input redirection character pointer.
+ * Only the first instantiation is used.
+ */
+void stdinRedirectHandler(char *input, struct Command *c) {
+    if (c->input_redir == NULL) {
+        char *s;
+
+        s = (char *)calloc(sizeof(input) + 1, sizeof(char));
+        strcpy(s, input);
+
+        c->input_redir = s;
+    }
+}
+
+/*
+ * Sets the Command structure's standard output redirection character pointer.
+ * Only the first instantiation is used.
+ */
+void stdoutRedirectHandler(char *input, struct Command *c) {
+    if (c->output_redir == NULL) {
+        char *s;
+
+        s = (char *)calloc(sizeof(input) + 1, sizeof(char));
+        strcpy(s, input);
+
+        c->output_redir = s;
+    }
 }

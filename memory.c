@@ -27,15 +27,16 @@ void deallocateCommand(struct Command *c) {
         c->args[i] = NULL;
     }
 
-    if (c->iredir) {
-        free(c->iredir);
-        c->iredir = NULL;
+    if (c->input_redir) {
+        free(c->input_redir);
+        c->input_redir = NULL;
     }
 
-    if (c->oredir) {
-        free(c->oredir);
-        c->oredir = NULL;
+    if (c->output_redir) {
+        free(c->output_redir);
+        c->output_redir = NULL;
     }
+
     free(c);
     c = NULL;
 }
@@ -51,7 +52,7 @@ void deallocateShellProcess(struct ShellProcess *sh) {
 
     while (cur) {
         next = cur->next;
-        kill(cur->pid, SIGTERM);
+        kill(cur->pid, SIGINT);
         free(cur);
         cur = next;
     }

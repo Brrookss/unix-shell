@@ -7,9 +7,9 @@
 #include "command_prompt.h"
 #include "command_handlers.h"
 #include "commands_built_in.h"
-#include "signal_handlers.h"
 #include "commands_external.h"
 #include "memory.h"
+#include "signal_handlers.h"
 
 int main(void) {
     struct ShellProcess *sh;
@@ -18,17 +18,36 @@ int main(void) {
     while (isRunning(sh)) {
         struct Command *c;
         char *input;
+        int saved_stdin, saved_stdout;
 
         checkBackgroundProcesses(sh);
 
         input = getInput();
         c = parseInput(input);
 
-        if (isCommand(c) && isBuiltInCommand(c)) {
-            executeBuiltInCommand(c, sh);
-        } else if (isCommand(c)) {
-            runInForeground(c) ? executeExternalCommandForeground(c, sh) : executeExternalCommandBackground(c, sh);
+        saved_stdin = saved_stdout = 0;
+
+        if (stdinRedirectAttempt(c))
+            saved_stdin = redirectStdin(c);
+        if (stdoutRedirectAttempt(c))
+            saved_stdout = redirectStdout(c);
+
+        if (!successfulRedirects(saved_stdin, saved_stdout))
+            setExitFailureMessage(sh);
+
+        if (isCommand(c) && successfulRedirects(saved_stdin, saved_stdout)) {
+            if (isBuiltInCommand(c)) {
+                executeBuiltInCommand(c, sh);
+            } else {
+                runInForeground(c) ? executeExternalCommandForeground(c, sh) : executeExternalCommandBackground(c, sh);
+            }
         }
+
+        if (stdinRedirectAttempt(c))
+            resetStdin(saved_stdin);
+        if (stdoutRedirectAttempt(c))
+            resetStdout(saved_stdout);
+
         deallocateCommand(c);
         deallocateInput(input);
     }

@@ -103,6 +103,21 @@ int isRunning(struct ShellProcess *sh) {
 }
 
 /*
+ *
+ */
+void setExitFailureMessage(struct ShellProcess *sh) {
+    char *s;
+
+    if (sh->prev_status_message)
+        free(sh->prev_status_message);
+
+    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    strcpy(s, "Exit value 1");
+
+    sh->prev_status_message = s;
+}
+
+/*
  * Sets the ShellProcess structure's most recent terminating signal value
  */
 void setPrevStatusMessage(int child_status, struct ShellProcess *sh) {

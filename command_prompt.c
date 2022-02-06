@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "command_prompt.h"
 #include "command_handlers.h"
 
@@ -17,17 +19,69 @@ char *getInput(void) {
 }
 
 /*
+ * Creates an empty Command structure
+ */
+struct Command *initializeCommand(void) {
+    struct Command *c;
+
+    c = (struct Command *)malloc(sizeof(struct Command));
+
+    c->args = calloc(MAX_ARGS + 1, sizeof(char *));
+    c->name = NULL;
+    c->input_redir = NULL;
+    c->output_redir = NULL;
+    c->foreground = 0;
+
+    return c;
+}
+
+/*
+ * Checks if string is or starts with the comment symbol
+ */
+int isComment(char *s) {
+    return strcmp(s, "#") == 0 || strncmp(s, "#", 1) == 0;
+}
+
+/*
+ * Checks if string matches the input redirection symbol
+ */
+int isInputRedirect(char *s) {
+    return strcmp(s, "<") == 0;
+}
+
+/*
+ * Checks if string matches the output redirection symbol
+ */
+int isOutputRedirect(char *s) {
+    return strcmp(s, ">") == 0;
+}
+
+/*
+ * Checks if string matches the shell prompt symbol
+ */
+int isPrompt(char *s) {
+    return strcmp(s, ":") == 0;
+}
+
+/*
+ * Checks if string matches the background process invocation symbol
+ */
+int isBackgroundProcess(char *s) {
+    return strcmp(s, "&") == 0;
+}
+
+/*
  * Interprets user input and stores data in a Command structure to be utilized
  */
 struct Command *parseInput(char *input) {
     char *tok, *next_tok, *substr, *delims = " \n";
     struct Command *c;
 
-    c = initializeCommandStruct();
+    c = initializeCommand();
 
     tok = strtok(input, delims);
 
-    if (tok && isPromptSymbol(tok)) {
+    if (tok && isPrompt(tok)) {
         tok = strtok(NULL, delims);
     } else {
         tok = NULL;  // Ensures lines without prompt symbol won't be parsed further
@@ -46,18 +100,15 @@ struct Command *parseInput(char *input) {
     while (tok) {
         if (isInputRedirect(tok)) {
             next_tok = strtok(NULL, delims);  // Gets following related argument
-            inputRedirectHandler(next_tok, c);
+            stdinRedirectHandler(next_tok, c);
         }
-
         else if (isOutputRedirect(tok)) {
             next_tok = strtok(NULL, delims);
-            outputRedirectHandler(next_tok, c);
+            stdoutRedirectHandler(next_tok, c);
         }
-
         else if (isBackgroundProcess(tok)) {
             setBackgroundProcess(1, c);
         }
-
         else {
             while ((substr = hasVarExpansion(tok)) != NULL) {
                 tok = expandVar(tok, substr);
@@ -70,53 +121,76 @@ struct Command *parseInput(char *input) {
 }
 
 /*
- * Checks if string is a pound symbol or starts with one
+ * Redirects standard input to the file path stored in the Command structure
  */
-int isComment(char *s) {
-    return strcmp(s, "#") == 0 || strncmp(s, "#", 1) == 0;
+int redirectStdin(struct Command *c) {
+	int input_fd, saved_stdin;
+    
+    input_fd = open(c->input_redir, O_RDONLY);
+
+	if (input_fd == -1) { 
+		printf("Cannot open %s for input\n", c->input_redir);
+        fflush(stdout);
+		return -1; 
+	}
+
+	saved_stdin = dup(STDIN_FILENO);
+    dup2(input_fd, STDIN_FILENO);
+
+    return saved_stdin;
 }
 
 /*
- * Checks if string is a less than symbol
+ * Redirects standard output to the file path stored in the Command structure
  */
-int isInputRedirect(char *s) {
-    return strcmp(s, "<") == 0;
+int redirectStdout(struct Command *c) {
+	int output_fd, saved_stdout;
+    
+    output_fd = open(c->output_redir, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+	if (output_fd == -1) { 
+		printf("Cannot open %s for output\n", c->output_redir);
+        fflush(stdout);
+		return -1;
+	}
+  
+    saved_stdout = dup(STDOUT_FILENO);
+	dup2(output_fd, STDOUT_FILENO);
+
+    return saved_stdout;
 }
 
 /*
- * Checks if string is a greater than symbol
+ * Restores standard input
  */
-int isOutputRedirect(char *s) {
-    return strcmp(s, ">") == 0;
+void resetStdin(int stdin) {
+    dup2(stdin, STDIN_FILENO);
 }
 
 /*
- * Checks if string is a colon
+ * Restores standard output
  */
-int isPromptSymbol(char *s) {
-    return strcmp(s, ":") == 0;
+void resetStdout(int stdout) {
+    dup2(stdout, STDOUT_FILENO);
 }
 
 /*
- * Checks if string is an ampersand
+ * Checks if standard input and standard output were redirected succesfully
  */
-int isBackgroundProcess(char *s) {
-    return strcmp(s, "&") == 0;
+int successfulRedirects(int stdin, int stdout) {
+    return stdin != -1 && stdout != -1;
 }
 
 /*
- * Creates an empty Command structure
+ * Checks if there's an attempt to redirect standard input
  */
-struct Command *initializeCommandStruct(void) {
-    struct Command *c;
+int stdinRedirectAttempt(struct Command *c) {
+    return c->input_redir != NULL;
+}
 
-    c = (struct Command *)malloc(sizeof(struct Command));
-
-    c->args = calloc(MAX_ARGS + 1, sizeof(char *));
-    c->name = NULL;
-    c->iredir = NULL;
-    c->oredir = NULL;
-    c->foreground = 0;
-
-    return c;
+/*
+ * Checks if there's an attempt to redirect standard output
+ */
+int stdoutRedirectAttempt(struct Command *c) {
+    return c->output_redir != NULL;
 }

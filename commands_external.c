@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include <unistd.h>
 #include "command_prompt.h"
 #include "command_handlers.h"
@@ -12,12 +13,12 @@
 void backgroundRedirection(struct Command *c) {
     char *dest = "/dev/null";
 
-    if (c->iredir == NULL) {
-        inputRedirectHandler(dest, c);
+    if (c->input_redir == NULL) {
+        stdinRedirectHandler(dest, c);
     }
 
-    if (c->oredir == NULL) {
-        outputRedirectHandler(dest, c);
+    if (c->output_redir == NULL) {
+        stdoutRedirectHandler(dest, c);
     }
 }
 
@@ -40,7 +41,10 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
             printf("Background pid is %d\n", getpid());
             fflush(stdout);
             execvp(c->name, c->args);
+
+            // Only occurs during an unsuccessful exec()
             perror(c->name);
+            kill(getpid(), SIGKILL);
             return EXIT_FAILURE;
             break;
         default:
@@ -66,7 +70,10 @@ int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh)
             break;
         case 0:
             execvp(c->name, c->args);
+
+            // Only occurs during an unsuccessful exec()
             perror(c->name);
+            kill(getpid(), SIGKILL);
             return EXIT_FAILURE;
             break;
         default:
