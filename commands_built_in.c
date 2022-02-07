@@ -13,7 +13,7 @@
  * Changes current directory.
  * Path is given as an argument and can be absolute or relative.
  * If path isn't provided, the default is the path specified
- * in the HOME environment variable.
+ * in the HOME environment variable
  */
 void cd_(struct Command *c) {
     c->args[1] ? chdir(c->args[1]) : chdir(getenv("HOME"));

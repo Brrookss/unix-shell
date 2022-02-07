@@ -13,21 +13,18 @@ struct Command {
 };
 
 char *getInput(void);
-
+struct Command *initializeCommand(void);
 int isBackgroundProcess(char *);
 int isComment(char *);
 int isInputRedirect(char *);
 int isOutputRedirect(char *);
+struct Command *parseInput(char *);
 int redirectStdin(struct Command *);
 int redirectStdout(struct Command *);
+void resetStdin(int);
+void resetStdout(int);
 int stdinRedirectAttempt(struct Command *);
 int stdoutRedirectAttempt(struct Command *);
 int successfulRedirects(int, int);
-
-struct Command *initializeCommand(void);
-struct Command *parseInput(char *);
-
-void resetStdin(int);
-void resetStdout(int);
 
 #endif

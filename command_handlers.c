@@ -5,9 +5,6 @@
 #include "command_prompt.h"
 #include "command_handlers.h"
 
-#define MAX_PID_DIGITS 8
-#define VARIABLE_EXPANSION "$$"
-
 /*
  * Adds to the Command structure's argument character pointer array
  * with the index being the first NULL element
@@ -28,7 +25,7 @@ void argumentHandler(char *input, struct Command *c) {
 
 /*
  * Sets the Command structure's name character pointer.
- * Only the first instantiation is used.
+ * Only the first instantiation is used
  */
 void commandHandler(char *input, struct Command *c) {
     if (c->name == NULL) {
@@ -43,9 +40,8 @@ void commandHandler(char *input, struct Command *c) {
 
 /*
  * Creates a new string in which the pid replaces the variable expansion
- * characters.
- * Only the first instance of the variable expansion characters is
- * replaced so multiple calls are needed if more than one pair exists.
+ * characters. Only the first instance of the variable expansion characters
+ * is replaced so multiple calls are needed if multiple pairs exists
  */
 char *expandVar(char *input, char *substring) {
     int pid_i, i, j, k;
@@ -79,7 +75,7 @@ char *expandVar(char *input, char *substring) {
 /*
  * Checks if string has at least one pair of variable expansion
  * characters. A character pointer to the first instance is
- * returned, otherwise the pointer will be NULL.
+ * returned, otherwise the pointer will be NULL
  */
 char *hasVarExpansion(char *input) {
     return strstr(input, VARIABLE_EXPANSION);
@@ -102,7 +98,7 @@ void setBackgroundProcess(int bool, struct Command *c) {
 
 /*
  * Sets the Command structure's standard input redirection character pointer.
- * Only the first instantiation is used.
+ * Only the first instantiation is used
  */
 void stdinRedirectHandler(char *input, struct Command *c) {
     if (c->input_redir == NULL) {
@@ -117,7 +113,7 @@ void stdinRedirectHandler(char *input, struct Command *c) {
 
 /*
  * Sets the Command structure's standard output redirection character pointer.
- * Only the first instantiation is used.
+ * Only the first instantiation is used
  */
 void stdoutRedirectHandler(char *input, struct Command *c) {
     if (c->output_redir == NULL) {

@@ -52,7 +52,7 @@ void deallocateShellProcess(struct ShellProcess *sh) {
 
     while (cur) {
         next = cur->next;
-        kill(cur->pid, SIGINT);
+        kill(cur->pid, SIGKILL);
         free(cur);
         cur = next;
     }

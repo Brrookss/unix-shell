@@ -1,6 +1,8 @@
 #ifndef SHELL_PROCESS_H_
 #define SHELL_PROCESS_H_
 
+#define STATUS_MESSAGE_CHARS 100
+
 struct BackgroundProcess {
     struct BackgroundProcess *next;
     int pid;
@@ -12,15 +14,14 @@ struct ShellProcess {
     int exiting;
 };
 
-
-int isRunning(struct ShellProcess *);
-
-struct ShellProcess *initializeShellProcess(void);
-
 void addBackgroundProcess(int, struct ShellProcess *);
 void checkBackgroundProcesses(struct ShellProcess *);
-void deleteBackgroundProcess(int, struct ShellProcess *);
+int deleteBackgroundProcess(int, struct ShellProcess *);
+void displayPrevStatusMessage(struct ShellProcess *);
+int foundBackgroundProcess(int);
+struct ShellProcess *initializeShellProcess(void);
+int isRunning(struct ShellProcess *);
 void setExitFailureMessage(struct ShellProcess *);
-void setPrevStatusMessage(int, struct ShellProcess *);
+int setPrevStatusMessage(int, struct ShellProcess *);
 
 #endif

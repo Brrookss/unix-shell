@@ -4,27 +4,6 @@
 #include <string.h>
 #include "shell_process.h"
 
-#define STATUS_MESSAGE_CHARS 100
-
-/*
- * Initializes a ShellProcess structure
- */
-struct ShellProcess *initializeShellProcess(void) {
-    struct ShellProcess *sh;
-    char *s;
-
-    sh = (struct ShellProcess *)malloc(sizeof(struct ShellProcess));
-
-    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
-    strcpy(s, "Exit status 0");
-
-    sh->head = NULL;
-    sh->prev_status_message = s;
-    sh->exiting = 1;
-
-    return sh;
-}
-
 /*
  * Adds a BackgroundProcess structure to the linked list stored
  * in the ShellProcess structure
@@ -55,28 +34,34 @@ void addBackgroundProcess(int pid, struct ShellProcess *sh) {
  * Checks the status of any recently ended background processes
  */
 void checkBackgroundProcesses(struct ShellProcess *sh) {
-    int child_status;
+    int child_status, status;
     pid_t spawn_pid;
 
     while ((spawn_pid = waitpid(-1, &child_status, WNOHANG)) > 0) {
-        deleteBackgroundProcess(spawn_pid, sh);
-        if (WIFEXITED(child_status)) {
-            printf("Background pid %d is done: Exit value %d\n", spawn_pid, WEXITSTATUS(child_status));
-        } else {
-            printf("Background pid %d is done: Terminated by signal %d\n", spawn_pid, WTERMSIG(child_status));
+        status = deleteBackgroundProcess(spawn_pid, sh);
+
+        if (foundBackgroundProcess(status)) {
+            if (WIFEXITED(child_status)) {
+                printf("Background pid %d is done: Exit value %d\n", spawn_pid, WEXITSTATUS(child_status));
+            } else {
+                printf("Background pid %d is done: Terminated by signal %d\n", spawn_pid, WTERMSIG(child_status));
+            }
+            fflush(stdout);
         }
-        fflush(stdout);
     }
 }
 
 /*
  * Deletes a BackgroundProcess structure from the linked list in ShellProcess
  */
-void deleteBackgroundProcess(int pid, struct ShellProcess *sh) {
+int deleteBackgroundProcess(int pid, struct ShellProcess *sh) {
     struct BackgroundProcess *cur, *prev;
+    int found;
 
     cur = sh->head;
     prev = NULL;
+
+    found = -1;
 
     while (cur && cur->pid != pid) {
         prev = cur;
@@ -92,7 +77,44 @@ void deleteBackgroundProcess(int pid, struct ShellProcess *sh) {
         kill(pid, SIGINT);
         free(cur);
         cur = NULL;
+        found = 0;
     }
+    return found;
+}
+
+/*
+ * Displays the most recent terminating signal value
+ */
+void displayPrevStatusMessage(struct ShellProcess *sh) {
+    printf("%s\n", sh->prev_status_message);
+    fflush(stdout);
+}
+
+/*
+ * Initializes a ShellProcess structure
+ */
+struct ShellProcess *initializeShellProcess(void) {
+    struct ShellProcess *sh;
+    char *s;
+
+    sh = (struct ShellProcess *)malloc(sizeof(struct ShellProcess));
+
+    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    strcpy(s, "Exit status 0");
+
+    sh->head = NULL;
+    sh->prev_status_message = s;
+    sh->exiting = 1;
+
+    return sh;
+}
+
+/*
+ * Checks if a BackgroundProcess structure was found in the
+ * the linked list in ShellProcess
+ */
+int foundBackgroundProcess(int found) {
+    return found == 0;
 }
 
 /*
@@ -103,7 +125,8 @@ int isRunning(struct ShellProcess *sh) {
 }
 
 /*
- *
+ * Sets the ShellProcess structure's most recent status message to
+ * a generic failure message
  */
 void setExitFailureMessage(struct ShellProcess *sh) {
     char *s;
@@ -118,9 +141,12 @@ void setExitFailureMessage(struct ShellProcess *sh) {
 }
 
 /*
- * Sets the ShellProcess structure's most recent terminating signal value
+ * Sets the ShellProcess structure's most recent terminating signal value.
+ * The value returned is an integer representing the exit or terminating
+ * status as determined by WIFEXITED()
  */
-void setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
+int setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
+    int status;
     char *s;
 
     if (sh->prev_status_message)
@@ -130,8 +156,11 @@ void setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
     
     if (WIFEXITED(child_status)) {
         sprintf(s, "Exit value %d", WEXITSTATUS(child_status));
+        status = WEXITSTATUS(child_status);
     } else {
         sprintf(s, "Terminated by signal %d", WTERMSIG(child_status));
+        status = WTERMSIG(child_status);
     }
     sh->prev_status_message = s;
+    return status;
 }

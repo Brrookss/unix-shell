@@ -4,8 +4,8 @@
 #include "command_prompt.h"
 #include "shell_process.h"
 
-void deallocateInput(char *);
 void deallocateCommand(struct Command *);
+void deallocateInput(char *);
 void deallocateShellProcess(struct ShellProcess *);
 
 #endif
