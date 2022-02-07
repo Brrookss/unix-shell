@@ -6,6 +6,7 @@
 #include "command_prompt.h"
 #include "command_handlers.h"
 #include "shell_process.h"
+#include "smallsh.h"
 #include "commands_external.h"
 
 #define QUARTER_SECOND 250000
@@ -69,7 +70,6 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
  */
 int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh) {
     struct sigaction SIGINT_action = {0}, ignore_action = {0};
-	// int child_status, status;
 	pid_t spawn_pid;
     
     spawn_pid = fork();
@@ -98,6 +98,7 @@ int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh)
             return EXIT_FAILURE;
             break;
         default:
+            setForegroundPID(spawn_pid);
             raise(SIGUSR2);
             return EXIT_SUCCESS;
             break;

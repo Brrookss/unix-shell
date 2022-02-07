@@ -26,9 +26,10 @@ void handleSIGUSR2(int signo) {
     int child_status, status;
     pid_t spawn_pid;
 	char *s;
+	
+	spawn_pid = getForegroundPID();
+	spawn_pid = waitpid(spawn_pid, &child_status, 0);
 
-	spawn_pid = waitpid(-1, &child_status, 0);
-    
     s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
     
     if (WIFEXITED(child_status)) {

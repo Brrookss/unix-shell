@@ -37,7 +37,9 @@ void checkBackgroundProcesses(struct ShellProcess *sh) {
     int child_status, status;
     pid_t spawn_pid;
 
-    while ((spawn_pid = waitpid(-1, &child_status, WNOHANG)) > 0) {
+    spawn_pid = waitpid(-1, &child_status, WNOHANG);
+    
+    if (spawn_pid > 0) {
         status = deleteBackgroundProcess(spawn_pid, sh);
 
         if (foundBackgroundProcess(status)) {
@@ -141,6 +143,14 @@ void setExitFailureMessage(struct ShellProcess *sh) {
 }
 
 /*
+ * Checks if the ShellProcess structure's most recent status message
+ * differs from another message
+ */
+int hasDifferentStatusMessage(char *s, struct ShellProcess *sh) {
+    return strcmp(s, sh->prev_status_message) != 0;
+}
+
+/*
  * Sets the ShellProcess structure's most recent terminating signal value.
  * The value returned is an integer representing the exit or terminating
  * status as determined by WIFEXITED()
@@ -163,4 +173,15 @@ int setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
     }
     sh->prev_status_message = s;
     return status;
+}
+
+/*
+ * Sets the ShellProcess structure's most recent terminating signal
+ * value to a specific message. This differs from setPrevStatusMessage()
+ * in that this version doesn't determine the message to be stored
+ */
+void updatePrevStatusMessage(char *s, struct ShellProcess *sh) {
+    if (sh->prev_status_message)
+        free(sh->prev_status_message);
+    sh->prev_status_message = s;
 }

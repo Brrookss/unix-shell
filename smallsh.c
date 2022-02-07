@@ -13,6 +13,7 @@
 #include "smallsh.h"
 
 // To be accessible by signal handlers
+int foreground_pid;
 int foreground_only = 1;
 char *status_message = NULL;
 
@@ -32,7 +33,8 @@ int main(void) {
         input = getInput();
         c = parseInput(input);
 
-        saved_stdin = saved_stdout = 0;
+        saved_stdin = STDIN_FILENO;
+        saved_stdout = STDOUT_FILENO;
 
         if (stdinRedirectAttempt(c))
             saved_stdin = redirectStdin(c);
@@ -50,10 +52,8 @@ int main(void) {
             } else {
                 executeExternalCommandForeground(c, sh);
 
-                if (strcmp(sh->prev_status_message, status_message) != 0) {
-                    if (sh->prev_status_message)
-                        free(sh->prev_status_message);
-                    sh->prev_status_message = status_message;
+                if (hasDifferentStatusMessage(status_message, sh)) {
+                    updatePrevStatusMessage(status_message, sh);
                 }
             }
         }
@@ -93,6 +93,20 @@ void alternateForegroundOnly(void) {
  */
 int backgroundProcessesAllowed(void) {
     return foreground_only == 1;
+}
+
+/*
+ * Gets the most recent foreground process' PID
+ */
+int getForegroundPID(void) {
+    return foreground_pid;
+}
+
+/*
+ * Sets the most recent foreground process' PID
+ */
+void setForegroundPID(int pid) {
+    foreground_pid = pid;
 }
 
 /*
