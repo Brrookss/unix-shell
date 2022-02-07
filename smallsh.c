@@ -76,13 +76,21 @@ int main(void) {
  * enabled and disabled, respectively
  */
 void alternateForegroundOnly(void) {
+    char *prompt = ": ";
+
     foreground_only = foreground_only == 0 ? 1 : 0;
+
+    printf("\n");
+    fflush(stdout);
 
     if (foreground_only == 0) {
         printf("Entering foreground-only mode (& is now ignored)\n");
     } else {
         printf("Exiting foreground-only mode\n");
     }
+    fflush(stdout);
+
+    printf("%s", prompt);
     fflush(stdout);
 }
 

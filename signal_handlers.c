@@ -13,7 +13,6 @@
  * background proccesses are allowed to be invoked
  */
 void handleSIGTSTP(int signo) {
-    write(STDOUT_FILENO, "\n", 1);
     alternateForegroundOnly();
 }
 
@@ -52,7 +51,7 @@ void handleSIGUSR2(int signo) {
  * Initializes the SIGINT signal handler
  */
 void initializeSIGINT(void) {
-	struct sigaction SIGINT_action = {0};
+	struct sigaction SIGINT_action = {{0}};
 
 	SIGINT_action.sa_handler = SIG_IGN;
 	sigfillset(&SIGINT_action.sa_mask);
@@ -64,7 +63,7 @@ void initializeSIGINT(void) {
  * Initializes the SIGTSTP signal handler
  */
 void initializeSIGTSTP(void) {
-	struct sigaction SIGTSTP_action = {0};
+	struct sigaction SIGTSTP_action = {{0}};
 
 	SIGTSTP_action.sa_handler = handleSIGTSTP;
 	sigfillset(&SIGTSTP_action.sa_mask);
@@ -85,7 +84,7 @@ void initializeSignalHandlers(void) {
  * Initializes the SIGUSR2 signal handler
  */
 void initializeSIGUSR2(void) {
-	struct sigaction SIGUSR2_action = {0};
+	struct sigaction SIGUSR2_action = {{0}};
 
 	SIGUSR2_action.sa_handler = handleSIGUSR2;
 	sigfillset(&SIGUSR2_action.sa_mask);

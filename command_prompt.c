@@ -18,7 +18,9 @@ char *getInput(void) {
     printf("%s", prompt);
     fflush(stdout);
 
-    getline(&buffer, &len, stdin);
+    while (getline(&buffer, &len, stdin) == -1) {
+        clearerr(stdin);
+    }
     return buffer;
 }
 

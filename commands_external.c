@@ -30,7 +30,7 @@ void backgroundRedirection(struct Command *c) {
  * Executes command as a background process
  */
 int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh) {
-    struct sigaction ignore_action = {0};
+    struct sigaction ignore_action = {{0}};
 	pid_t spawn_pid;
     
     backgroundRedirection(c);
@@ -69,7 +69,7 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
  * Executes command as a foreground process
  */
 int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh) {
-    struct sigaction SIGINT_action = {0}, ignore_action = {0};
+    struct sigaction SIGINT_action = {{0}}, ignore_action = {{0}};
 	pid_t spawn_pid;
     
     spawn_pid = fork();
