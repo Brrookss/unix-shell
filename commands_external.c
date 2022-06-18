@@ -11,7 +11,7 @@
 
 #define QUARTER_SECOND 250000
 
-/*
+/**
  * Redirects uninitialized input and output to "/dev/null"
  */
 void backgroundRedirection(struct Command *c) {
@@ -26,10 +26,10 @@ void backgroundRedirection(struct Command *c) {
     }
 }
 
-/*
+/**
  * Executes command as a background process
  */
-int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh) {
+int executeExternalCommandBackground(struct Command* c, struct ShellProcess* sh) {
     struct sigaction ignore_action = {{0}};
 	pid_t spawn_pid;
     
@@ -65,10 +65,10 @@ int executeExternalCommandBackground(struct Command *c, struct ShellProcess *sh)
 	}
 }
 
-/*
+/**
  * Executes command as a foreground process
  */
-int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh) {
+int executeExternalCommandForeground(struct Command* c, struct ShellProcess* sh) {
     struct sigaction SIGINT_action = {{0}}, ignore_action = {{0}};
 	pid_t spawn_pid;
     
@@ -105,9 +105,9 @@ int executeExternalCommandForeground(struct Command *c, struct ShellProcess *sh)
 	}
 }
 
-/*
+/**
  * Checks if command is to be executed as a background process
  */
-int runInBackgroundAttempt(struct Command *c) {
+int runInBackgroundAttempt(struct Command* c) {
     return c->foreground == 1;
 }
