@@ -1,5 +1,5 @@
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#ifndef __MEMORY_H__
+#define __MEMORY_H__
 
 #include "command_prompt.h"
 #include "shell_process.h"
@@ -8,4 +8,4 @@ void deallocateCommand(struct Command*);
 void deallocateInput(char*);
 void deallocateShellProcess(struct ShellProcess*);
 
-#endif
+#endif /* __MEMORY_H__ */

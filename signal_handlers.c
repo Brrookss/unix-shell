@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "signal_handlers.h"
 #include "shell_process.h"
-#include "smallsh.h"
+#include "shell.h"
 
 /**
  * Sets the global foreground integer representing whether background processes

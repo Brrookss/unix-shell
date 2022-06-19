@@ -1,5 +1,5 @@
-#ifndef COMMANDS_BUILT_IN_H_
-#define COMMANDS_BUILT_IN_H_
+#ifndef __COMMANDS_BUILT_IN_H__
+#define __COMMANDS_BUILT_IN_H__
 
 int isBuiltInCommand(struct Command*);
 int iscd(char*);
@@ -11,4 +11,4 @@ void executeBuiltInCommand(struct Command*, struct ShellProcess*);
 void exit_(struct ShellProcess*);
 void status(struct ShellProcess*);
 
-#endif
+#endif /* __COMMANDS_BUILT_IN_H__ */

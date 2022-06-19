@@ -1,5 +1,5 @@
-#ifndef SHELL_PROCESS_H_
-#define SHELL_PROCESS_H_
+#ifndef __SHELL_PROCESS_H__
+#define __SHELL_PROCESS_H__
 
 #define STATUS_MESSAGE_CHARS 100
 
@@ -26,4 +26,4 @@ void setExitFailureMessage(struct ShellProcess*);
 int setPrevStatusMessage(int, struct ShellProcess*);
 void updatePrevStatusMessage(char*, struct ShellProcess*);
 
-#endif
+#endif /* __SHELL_PROCESS_H__ */

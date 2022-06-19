@@ -1,5 +1,5 @@
-#ifndef COMMAND_HANDLERS_H_
-#define COMMAND_HANDLERS_H_
+#ifndef __COMMAND_HANDLERS_H__
+#define __COMMAND_HANDLERS_H__
 
 #define MAX_PID_DIGITS 8
 #define VARIABLE_EXPANSION "$$"
@@ -13,4 +13,4 @@ void setBackgroundProcess(int, struct Command*);
 void stdinRedirectHandler(char*, struct Command*);
 void stdoutRedirectHandler(char*, struct Command*);
 
-#endif
+#endif /* __COMMAND_HANDLERS_H__ */

@@ -10,7 +10,7 @@
 #include "commands_external.h"
 #include "memory.h"
 #include "signal_handlers.h"
-#include "smallsh.h"
+#include "shell.h"
 
 // To be accessible by signal handlers
 int foreground_pid;

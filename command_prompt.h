@@ -1,5 +1,5 @@
-#ifndef COMMAND_PROMPT_H_
-#define COMMAND_PROMPT_H_
+#ifndef __COMMAND_PROMPT_H__
+#define __COMMAND_PROMPT_H__
 
 #define MAX_CL_CHARS 2048
 #define MAX_ARGS 512
@@ -27,4 +27,4 @@ int stdinRedirectAttempt(struct Command*);
 int stdoutRedirectAttempt(struct Command*);
 int successfulRedirects(int, int);
 
-#endif
+#endif /* __COMMAND_PROMPT_H__ */
