@@ -36,7 +36,7 @@ Some functionalities include:
 
 ### Executing program
 
-1. Run program
+1. Run program:
 
 ```./shell```
 
@@ -44,7 +44,7 @@ Some functionalities include:
 
 ```command [arg1 arg2 ... argN] [< input_file] [> output_file] [&]```
 
-3. Exit program
+3. Exit program:
 
 ```exit```
 
