@@ -3,18 +3,18 @@
 #include <signal.h>
 #include "memory.h"
 
-/*
- * Deallocates user input character array
+/**
+ * Deallocates user input character array.
  */
-void deallocateInput(char *s) {
+void deallocateInput(char* s) {
     free(s);
     s = NULL;
 }
 
-/*
- * Deallocates Command structure including all dynamically created arguments
+/**
+ * Deallocates Command struct, including all dynamically created arguments.
  */
-void deallocateCommand(struct Command *c) {
+void deallocateCommand(struct Command* c) {
     int i;
 
     if (c->name) {
@@ -41,12 +41,12 @@ void deallocateCommand(struct Command *c) {
     c = NULL;
 }
 
-/*
- * Deallocates ShellProcess structure and terminates all
- * currently running background processes
+/**
+ * Deallocates ShellProcess struct and terminates all background processes.
  */
-void deallocateShellProcess(struct ShellProcess *sh) {
-    struct BackgroundProcess *cur, *next;
+void deallocateShellProcess(struct ShellProcess* sh) {
+    struct BackgroundProcess* cur;
+    struct BackgroundProcess* next;
 
     cur = sh->head;
 

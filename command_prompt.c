@@ -6,14 +6,15 @@
 #include "command_prompt.h"
 #include "command_handlers.h"
 
-/*
- * Gets user input to be parsed
+/**
+ * Gets user input to be parsed.
  */
-char *getInput(void) {
-    char *buffer, *prompt = ": ";
+char* getInput(void) {
+    char* buffer;
+    char* prompt = ": ";
     size_t len = MAX_CL_CHARS + 1;
 
-    buffer = (char *)calloc(MAX_CL_CHARS + 1, sizeof(char));
+    buffer = (char*)calloc(MAX_CL_CHARS + 1, sizeof(char));
 
     printf("%s", prompt);
     fflush(stdout);
@@ -24,15 +25,15 @@ char *getInput(void) {
     return buffer;
 }
 
-/*
- * Creates an empty Command structure
+/**
+ * Creates an empty Command struct.
  */
-struct Command *initializeCommand(void) {
-    struct Command *c;
+struct Command* initializeCommand(void) {
+    struct Command* c;
 
-    c = (struct Command *)malloc(sizeof(struct Command));
+    c = (struct Command*)malloc(sizeof(struct Command));
 
-    c->args = calloc(MAX_ARGS + 1, sizeof(char *));
+    c->args = calloc(MAX_ARGS + 1, sizeof(char*));
     c->name = NULL;
     c->input_redir = NULL;
     c->output_redir = NULL;
@@ -41,40 +42,43 @@ struct Command *initializeCommand(void) {
     return c;
 }
 
-/*
- * Checks if string is or starts with the comment symbol
+/**
+ * Checks if string is or starts with the comment symbol.
  */
-int isComment(char *s) {
+int isComment(char* s) {
     return strcmp(s, "#") == 0 || strncmp(s, "#", 1) == 0;
 }
 
-/*
- * Checks if string matches the input redirection symbol
+/**
+ * Checks if string matches the input redirection symbol.
  */
-int isInputRedirect(char *s) {
+int isInputRedirect(char* s) {
     return strcmp(s, "<") == 0;
 }
 
-/*
- * Checks if string matches the output redirection symbol
+/**
+ * Checks if string matches the output redirection symbol.
  */
-int isOutputRedirect(char *s) {
+int isOutputRedirect(char* s) {
     return strcmp(s, ">") == 0;
 }
 
-/*
- * Checks if string matches the background process invocation symbol
+/**
+ * Checks if string matches the background process invocation symbol.
  */
-int isBackgroundProcess(char *s) {
+int isBackgroundProcess(char* s) {
     return strcmp(s, "&") == 0;
 }
 
-/*
- * Interprets user input and stores data in a Command structure to be utilized
+/**
+ * Interprets user input and stores data in a Command struct to be utilized.
  */
-struct Command *parseInput(char *input) {
-    char *tok, *next_tok, *substr, *delims = " \n\t";
-    struct Command *c;
+struct Command* parseInput(char* input) {
+    char* tok;
+    char* next_tok;
+    char* substr;
+    char* delims = " \n\t";
+    struct Command* c;
 
     c = initializeCommand();
 
@@ -86,7 +90,7 @@ struct Command *parseInput(char *input) {
         argumentHandler(tok, c);  // Includes command as first argument
         tok = strtok(NULL, delims);
     } else {
-        tok = NULL;  // Ensures comment lines won't be parsed further
+        tok = NULL;  // Ensures comment lines will not be parsed further
     }
 
     // Inteprets arguments, input/output redirections, and background processing attempts
@@ -113,10 +117,10 @@ struct Command *parseInput(char *input) {
     return c;
 }
 
-/*
- * Redirects standard input to the file path stored in the Command structure
+/**
+ * Redirects standard input to the file path stored in the Command struct.
  */
-int redirectStdin(struct Command *c) {
+int redirectStdin(struct Command* c) {
 	int input_fd, saved_stdin;
     
     input_fd = open(c->input_redir, O_RDONLY);
@@ -133,11 +137,12 @@ int redirectStdin(struct Command *c) {
     return saved_stdin;
 }
 
-/*
- * Redirects standard output to the file path stored in the Command structure
+/**
+ * Redirects standard output to the file path stored in the Command struct.
  */
-int redirectStdout(struct Command *c) {
-	int output_fd, saved_stdout;
+int redirectStdout(struct Command* c) {
+	int output_fd;
+    int saved_stdout;
     
     output_fd = open(c->output_redir, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
@@ -153,37 +158,37 @@ int redirectStdout(struct Command *c) {
     return saved_stdout;
 }
 
-/*
- * Restores standard input
+/**
+ * Restores standard input.
  */
 void resetStdin(int stdin) {
     dup2(stdin, STDIN_FILENO);
 }
 
-/*
- * Restores standard output
+/**
+ * Restores standard output.
  */
 void resetStdout(int stdout) {
     dup2(stdout, STDOUT_FILENO);
 }
 
-/*
- * Checks if standard input and standard output were redirected succesfully
+/**
+ * Checks if standard input and standard output were redirected succesfully.
  */
 int successfulRedirects(int stdin, int stdout) {
     return stdin != -1 && stdout != -1;
 }
 
-/*
- * Checks if there's an attempt to redirect standard input
+/**
+ * Checks if an attempt to redirect standard input was made.
  */
-int stdinRedirectAttempt(struct Command *c) {
+int stdinRedirectAttempt(struct Command* c) {
     return c->input_redir != NULL;
 }
 
-/*
- * Checks if there's an attempt to redirect standard output
+/**
+ * Checks if an attempt to redirect standard output was made.
  */
-int stdoutRedirectAttempt(struct Command *c) {
+int stdoutRedirectAttempt(struct Command* c) {
     return c->output_redir != NULL;
 }

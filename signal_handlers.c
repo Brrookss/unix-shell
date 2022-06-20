@@ -6,30 +6,31 @@
 #include <unistd.h>
 #include "signal_handlers.h"
 #include "shell_process.h"
-#include "smallsh.h"
+#include "shell.h"
 
-/*
- * Sets the global foreground integer which represents whether
- * background proccesses are allowed to be invoked
+/**
+ * Sets the global foreground integer representing whether background processes
+ * are allowed to be invoked.
  */
 void handleSIGTSTP(int signo) {
     alternateForegroundOnly();
 }
 
-/*
+/**
  * Waits for a child process to terminate, gets its terminating status message,
- * and sets the global status message. If the process is terminated by SIGINT,
- * a message is displayed
+ * and sets the global status message.
+ * 
+ * If process is terminated by SIGINT, a message is displayed.
  */
 void handleSIGUSR2(int signo) {
     int child_status, status;
     pid_t spawn_pid;
-	char *s;
+	char* s;
 	
 	spawn_pid = getForegroundPID();
 	spawn_pid = waitpid(spawn_pid, &child_status, 0);
 
-    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    s = (char*)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
     
     if (WIFEXITED(child_status)) {
         sprintf(s, "Exit value %d", WEXITSTATUS(child_status));
@@ -47,8 +48,8 @@ void handleSIGUSR2(int signo) {
 	setStatusMessage(s);
 }
 
-/*
- * Initializes the SIGINT signal handler
+/**
+ * Initializes SIGINT signal handler.
  */
 void initializeSIGINT(void) {
 	struct sigaction SIGINT_action = {{0}};
@@ -59,8 +60,8 @@ void initializeSIGINT(void) {
 	sigaction(SIGINT, &SIGINT_action, NULL);
 }
 
-/*
- * Initializes the SIGTSTP signal handler
+/**
+ * Initializes SIGTSTP signal handler.
  */
 void initializeSIGTSTP(void) {
 	struct sigaction SIGTSTP_action = {{0}};
@@ -71,8 +72,8 @@ void initializeSIGTSTP(void) {
 	sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 }
 
-/*
- * Initializes all signal handlers associated with the shell
+/**
+ * Initializes all signal handlers associated with the shell.
  */
 void initializeSignalHandlers(void) {
 	initializeSIGINT();
@@ -80,8 +81,8 @@ void initializeSignalHandlers(void) {
 	initializeSIGUSR2();
 }
 
-/*
- * Initializes the SIGUSR2 signal handler
+/**
+ * Initializes SIGUSR2 signal handler.
  */
 void initializeSIGUSR2(void) {
 	struct sigaction SIGUSR2_action = {{0}};
@@ -92,8 +93,8 @@ void initializeSIGUSR2(void) {
 	sigaction(SIGUSR2, &SIGUSR2_action, NULL);
 }
 
-/*
- * Checks if status matches the SIGINT terminating status
+/**
+ * Checks if status matches the SIGINT terminating status.
  */
 int terminatedBySIGINT(int status) {
 	return status == 2;

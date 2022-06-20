@@ -1,8 +1,8 @@
-#ifndef COMMANDS_EXTERNAL_H_
-#define COMMANDS_EXTERNAL_H_
+#ifndef __COMMANDS_EXTERNAL_H__
+#define __COMMANDS_EXTERNAL_H__
 
-int executeExternalCommandBackground(struct Command *, struct ShellProcess *);
-int executeExternalCommandForeground(struct Command *, struct ShellProcess *);
-int runInBackgroundAttempt(struct Command *);
+int executeExternalCommandBackground(struct Command*, struct ShellProcess*);
+int executeExternalCommandForeground(struct Command*, struct ShellProcess*);
+int runInBackgroundAttempt(struct Command*);
 
-#endif
+#endif /* __COMMANDS_EXTERNAL_H__ */

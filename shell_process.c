@@ -6,14 +6,15 @@
 #include <sys/wait.h>
 #include "shell_process.h"
 
-/*
- * Adds a BackgroundProcess structure to the linked list stored
- * in the ShellProcess structure
+/**
+ * Adds a BackgroundProcess struct to the ShellProcess struct.
  */
-void addBackgroundProcess(int pid, struct ShellProcess *sh) {
-    struct BackgroundProcess *cur, *prev, *new;
+void addBackgroundProcess(int pid, struct ShellProcess* sh) {
+    struct BackgroundProcess* cur;
+    struct BackgroundProcess* prev;
+    struct BackgroundProcess* new;
 
-    new = (struct BackgroundProcess *)malloc(sizeof(struct BackgroundProcess));
+    new = (struct BackgroundProcess*)malloc(sizeof(struct BackgroundProcess));
     new->pid = pid;
 
     cur = sh->head;
@@ -32,10 +33,10 @@ void addBackgroundProcess(int pid, struct ShellProcess *sh) {
     new->next = NULL;
 }
 
-/*
- * Checks the status of any recently ended background processes
+/**
+ * Checks the status of any recently ended background processes.
  */
-void checkBackgroundProcesses(struct ShellProcess *sh) {
+void checkBackgroundProcesses(struct ShellProcess* sh) {
     int child_status, status;
     pid_t spawn_pid;
 
@@ -55,11 +56,12 @@ void checkBackgroundProcesses(struct ShellProcess *sh) {
     }
 }
 
-/*
- * Deletes a BackgroundProcess structure from the linked list in ShellProcess
+/**
+ * Deletes a BackgroundProcess struct from the ShellProcess struct.
  */
-int deleteBackgroundProcess(int pid, struct ShellProcess *sh) {
-    struct BackgroundProcess *cur, *prev;
+int deleteBackgroundProcess(int pid, struct ShellProcess* sh) {
+    struct BackgroundProcess* cur;
+    struct BackgroundProcess* prev;
     int found;
 
     cur = sh->head;
@@ -86,24 +88,24 @@ int deleteBackgroundProcess(int pid, struct ShellProcess *sh) {
     return found;
 }
 
-/*
- * Displays the most recent terminating signal value
+/**
+ * Displays the most recent terminating signal value.
  */
-void displayPrevStatusMessage(struct ShellProcess *sh) {
+void displayPrevStatusMessage(struct ShellProcess* sh) {
     printf("%s\n", sh->prev_status_message);
     fflush(stdout);
 }
 
-/*
- * Initializes a ShellProcess structure
+/**
+ * Initializes a ShellProcess struct.
  */
-struct ShellProcess *initializeShellProcess(void) {
-    struct ShellProcess *sh;
-    char *s;
+struct ShellProcess* initializeShellProcess(void) {
+    struct ShellProcess* sh;
+    char* s;
 
-    sh = (struct ShellProcess *)malloc(sizeof(struct ShellProcess));
+    sh = (struct ShellProcess*)malloc(sizeof(struct ShellProcess));
 
-    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    s = (char*)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
     strcpy(s, "Exit status 0");
 
     sh->head = NULL;
@@ -113,58 +115,56 @@ struct ShellProcess *initializeShellProcess(void) {
     return sh;
 }
 
-/*
- * Checks if a BackgroundProcess structure was found in the
- * the linked list in ShellProcess
+/**
+ * Checks if a BackgroundProcess struct was found in the ShellProcess struct.
  */
 int foundBackgroundProcess(int found) {
     return found == 0;
 }
 
-/*
- * Checks ShellProcess exit status
+/**
+ * Checks ShellProcess exit status.
  */
-int isRunning(struct ShellProcess *sh) {
+int isRunning(struct ShellProcess* sh) {
     return sh->exiting != 0;
 }
 
-/*
- * Sets the ShellProcess structure's most recent status message to
- * a generic failure message
+/**
+ * Sets the ShellProcess struct's most recent status to a failure message.
  */
-void setExitFailureMessage(struct ShellProcess *sh) {
-    char *s;
+void setExitFailureMessage(struct ShellProcess* sh) {
+    char* s;
 
     if (sh->prev_status_message)
         free(sh->prev_status_message);
 
-    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    s = (char*)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
     strcpy(s, "Exit value 1");
 
     sh->prev_status_message = s;
 }
 
-/*
- * Checks if the ShellProcess structure's most recent status message
- * differs from another message
+/**
+ * Checks if the ShellProcess struct's most recent status differs.
  */
-int hasDifferentStatusMessage(char *s, struct ShellProcess *sh) {
+int hasDifferentStatusMessage(char* s, struct ShellProcess* sh) {
     return strcmp(s, sh->prev_status_message) != 0;
 }
 
-/*
+/**
  * Sets the ShellProcess structure's most recent terminating signal value.
+ * 
  * The value returned is an integer representing the exit or terminating
- * status as determined by WIFEXITED()
+ * status as determined by WIFEXITED().
  */
-int setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
+int setPrevStatusMessage(int child_status, struct ShellProcess* sh) {
     int status;
-    char *s;
+    char* s;
 
     if (sh->prev_status_message)
         free(sh->prev_status_message);
     
-    s = (char *)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
+    s = (char*)calloc(STATUS_MESSAGE_CHARS, sizeof(char));
     
     if (WIFEXITED(child_status)) {
         sprintf(s, "Exit value %d", WEXITSTATUS(child_status));
@@ -177,12 +177,13 @@ int setPrevStatusMessage(int child_status, struct ShellProcess *sh) {
     return status;
 }
 
-/*
- * Sets the ShellProcess structure's most recent terminating signal
- * value to a specific message. This differs from setPrevStatusMessage()
- * in that this version doesn't determine the message to be stored
+/**
+ * Sets the ShellProcess struct's most recent terminating signal to a message.
+ * 
+ * This differs from setPrevStatusMessage() in that this version does not
+ * determine the message to be stored.
  */
-void updatePrevStatusMessage(char *s, struct ShellProcess *sh) {
+void updatePrevStatusMessage(char* s, struct ShellProcess* sh) {
     if (sh->prev_status_message)
         free(sh->prev_status_message);
     sh->prev_status_message = s;

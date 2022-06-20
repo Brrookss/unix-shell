@@ -10,23 +10,24 @@
 #include "commands_external.h"
 #include "memory.h"
 #include "signal_handlers.h"
-#include "smallsh.h"
+#include "shell.h"
 
 // To be accessible by signal handlers
 int foreground_pid;
 int foreground_only = 1;
-char *status_message = NULL;
+char* status_message = NULL;
 
 int main(void) {
-    struct ShellProcess *sh;
+    struct ShellProcess* sh;
     sh = initializeShellProcess();
 
     initializeSignalHandlers();
 
     while (isRunning(sh)) {
-        struct Command *c;
-        char *input;
-        int saved_stdin, saved_stdout;
+        struct Command* c;
+        char* input;
+        int saved_stdin;
+        int saved_stdout;
 
         checkBackgroundProcesses(sh);
 
@@ -70,13 +71,14 @@ int main(void) {
     return EXIT_SUCCESS;
 }
 
-/*
- * Enables and disables foreground-only mode as a result of
- * receiving the SIGTSTP signal. Integers 0 and 1 refer to
- * enabled and disabled, respectively
+/**
+ * Enables and disables foreground-only mode as a result of receiving the
+ * SIGTSTP signal.
+ * 
+ * 0 and 1 refer to enabled and disabled, respectively.
  */
 void alternateForegroundOnly(void) {
-    char *prompt = ": ";
+    char* prompt = ": ";
 
     foreground_only = foreground_only == 0 ? 1 : 0;
 
@@ -94,32 +96,33 @@ void alternateForegroundOnly(void) {
     fflush(stdout);
 }
 
-/*
- * Checks if executing processes in the background is allowed based
- * on the value of the foreground_only global integer. Its value
- * is dictated by the SIGTSTP signal
+/**
+ * Checks if executing processes in the background is allowed based on the
+ * value of the foreground_only global integer.
+ * 
+ * Its value is dictated by the SIGTSTP signal.
  */
 int backgroundProcessesAllowed(void) {
     return foreground_only == 1;
 }
 
-/*
- * Gets the most recent foreground process' PID
+/**
+ * Gets the PID of the most recent foreground process.
  */
 int getForegroundPID(void) {
     return foreground_pid;
 }
 
-/*
- * Sets the most recent foreground process' PID
+/**
+ * Sets the PID of the most recent foreground process.
  */
 void setForegroundPID(int pid) {
     foreground_pid = pid;
 }
 
-/*
- * Sets the most recent foreground processes' terminating signal value 
+/**
+ * Sets the terminating signal value of the most recent foreground process.
  */
-void setStatusMessage(char *s) {
+void setStatusMessage(char* s) {
     status_message = s;
 }
